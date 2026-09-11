@@ -672,7 +672,7 @@ class AccountAmountSplitSection extends StatelessWidget {
             item: item,
             accounts: accounts,
             excludeKodes: [
-              if (excludeKode != null) excludeKode!,
+              ?excludeKode,
               for (final other in items)
                 if (other.id != item.id && other.akun != null) other.akun!.kode,
             ],
