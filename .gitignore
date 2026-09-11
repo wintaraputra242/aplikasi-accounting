@@ -1,0 +1,72 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Claude Code local session/settings -- not part of the app
+.claude/
+
+# Dev working notes, decision logs, and blueprint drafts -- kept locally for
+# reference, not meant to be published to the repo.
+blueprint_revisi_mangana.txt
+catatan_relasi_kas_periode.txt
+catatan_relasi_kas_periode_tadi_pagi.txt
+catatan_relasi_kas_periode_tadi_pag_jawaban.txt
+catatan_update_sc_alokasi_laba.txt
+testing_checklist_jurnal_umum.txt
+/tutorial/
+tutorial.zip
+
+# Reference/mockup images and sample documents used during development --
+# root-level only (NOT a blanket *.png/*.jpg rule, since assets/images/ and
+# platform icon folders contain real app images that must stay tracked).
+/INV.MANGANA.009.pdf
+/buku besar (general ledger).jpeg
+/contoh neraca saldo.jpeg
+/jurnal umum.jpeg
+/kas keluar.jpeg
+/laporan kas masuk.jpeg
+/transfer kas.jpeg
+/contoh_data_1.png
+/contoh_data_2.png
