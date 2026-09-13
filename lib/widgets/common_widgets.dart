@@ -4,6 +4,9 @@ import 'package:intl/intl.dart';
 
 import '../models/account.dart';
 import '../models/period.dart';
+import '../theme/app_semantic_colors.dart';
+import '../theme/app_spacing.dart';
+import '../theme/app_typography.dart';
 import '../utils/formatters.dart';
 
 final _thousandsFormat = NumberFormat.decimalPattern('id_ID');
@@ -65,32 +68,29 @@ class SectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Card() otomatis pakai CardThemeData global (border hairline, radius 8,
+    // elevation 0, background surfaceContainerLow) -- lihat lib/theme/app_theme.dart.
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 if (icon != null) ...[
-                  Icon(icon, color: Theme.of(context).colorScheme.primary),
-                  const SizedBox(width: 8),
+                  // Ikon header sengaja netral (bukan oranye) -- oranye brand
+                  // disimpan untuk aksi, bukan dekorasi. Lihat design.md §3.
+                  Icon(icon, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  const SizedBox(width: AppSpacing.sm),
                 ],
                 Expanded(
-                  child: Text(
-                    title,
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium
-                        ?.copyWith(fontWeight: FontWeight.bold),
-                  ),
+                  child: Text(title, style: Theme.of(context).textTheme.titleMedium),
                 ),
                 ?trailing,
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.md),
             child,
           ],
         ),
@@ -144,22 +144,33 @@ class _MoneyFieldState extends State<MoneyField> {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      controller: _controller,
-      keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.digitsOnly, RupiahInputFormatter()],
-      decoration: InputDecoration(
-        labelText: widget.label,
-        prefixText: 'Rp ',
-        prefixIcon: widget.icon != null ? Icon(widget.icon) : null,
-        border: const OutlineInputBorder(),
-        isDense: true,
-      ),
-      onChanged: (text) {
-        final value = parseFlexibleNumber(text);
-        _lastKnownValue = value;
-        widget.onChanged(value);
-      },
+    // Label ditaruh di atas field (bukan floating label Material default)
+    // supaya lebih cepat dipindai saat banyak MoneyField berurutan -- lihat
+    // design.md §3. Nominal rata kanan + tabular figures supaya kolom angka
+    // gampang dipindai mata.
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(widget.label, style: Theme.of(context).textTheme.labelMedium),
+        const SizedBox(height: 4),
+        TextFormField(
+          controller: _controller,
+          keyboardType: TextInputType.number,
+          textAlign: TextAlign.right,
+          style: moneyStyle(context),
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly, RupiahInputFormatter()],
+          decoration: InputDecoration(
+            prefixText: 'Rp ',
+            prefixIcon: widget.icon != null ? Icon(widget.icon) : null,
+            isDense: true,
+          ),
+          onChanged: (text) {
+            final value = parseFlexibleNumber(text);
+            _lastKnownValue = value;
+            widget.onChanged(value);
+          },
+        ),
+      ],
     );
   }
 
@@ -554,7 +565,9 @@ class AccountPickerField extends StatelessWidget {
         ),
         child: Text(
           value == null ? 'Pilih akun...' : value!.label,
-          style: value == null ? const TextStyle(color: Colors.black54) : null,
+          style: value == null
+              ? TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)
+              : null,
         ),
       ),
     );
@@ -710,19 +723,135 @@ class MoneyDisplayRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = TextStyle(
-      fontWeight: bold ? FontWeight.bold : FontWeight.normal,
-      fontSize: bold ? 16 : 14,
+    final labelStyle = (bold
+            ? Theme.of(context).textTheme.titleSmall
+            : Theme.of(context).textTheme.bodyMedium)
+        ?.copyWith(color: color);
+    final valueStyle = moneyStyle(
+      context,
       color: color,
+      fontSize: bold ? 16 : 14,
+      fontWeight: bold ? FontWeight.w700 : FontWeight.w600,
     );
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded(child: Text(label, style: style)),
-          Text(formatRupiah(value), style: style),
+          Expanded(child: Text(label, style: labelStyle)),
+          Text(formatRupiah(value), style: valueStyle),
         ],
+      ),
+    );
+  }
+}
+
+/// Nada warna semantik untuk [StatusBadge] -- lihat design.md §2.1 & §3.
+enum AppStatusTone { success, warning, danger, neutral }
+
+/// Badge status kecil (radius 4, background container-tone dari warna
+/// semantik) -- dipakai konsisten untuk Laba/Rugi, Lunas/Jatuh
+/// Tempo/Terlambat, Draft/Final, dsb, supaya makna warna tidak tertukar di
+/// seluruh app.
+class StatusBadge extends StatelessWidget {
+  final String label;
+  final AppStatusTone tone;
+
+  const StatusBadge({super.key, required this.label, required this.tone});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final semantic = context.semanticColors;
+    final (Color fg, Color bg) = switch (tone) {
+      AppStatusTone.success => (semantic.success, semantic.success.withValues(alpha: 0.15)),
+      AppStatusTone.warning => (semantic.warning, semantic.warning.withValues(alpha: 0.15)),
+      AppStatusTone.danger => (scheme.error, scheme.error.withValues(alpha: 0.15)),
+      AppStatusTone.neutral => (scheme.onSurfaceVariant, scheme.surfaceContainerHigh),
+    };
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(AppRadius.sm)),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelMedium?.copyWith(color: fg, height: 1),
+      ),
+    );
+  }
+}
+
+/// Judul AppBar dengan badge "Akuntansi Lanjutan" -- dipasang konsisten di
+/// semua 5 layar sistem jurnal umum/GL (Transaksi Kas, Buku Besar, Neraca
+/// Saldo GL, Jurnal Penyesuaian, Rekonsiliasi Bank) sebagai penanda visual
+/// bahwa pengguna sedang di "ruang" yang berbeda dari Pembukuan Periode.
+/// Lihat design.md §3 & §4.
+class GlAppBarTitle extends StatelessWidget {
+  final String title;
+  const GlAppBarTitle(this.title, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(child: Text(title, overflow: TextOverflow.ellipsis)),
+        const SizedBox(width: AppSpacing.sm),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+          decoration: BoxDecoration(
+            color: scheme.secondary.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
+          ),
+          child: Text(
+            'Akuntansi Lanjutan',
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(color: scheme.secondary),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// State kosong konsisten (ikon outline netral + 1 baris pesan + CTA
+/// opsional) -- dipakai di layar-layar yang datanya masih kosong, lihat
+/// design.md §3.
+class EmptyState extends StatelessWidget {
+  final IconData icon;
+  final String message;
+  final String? ctaLabel;
+  final VoidCallback? onCta;
+
+  const EmptyState({
+    super.key,
+    required this.icon,
+    required this.message,
+    this.ctaLabel,
+    this.onCta,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final onSurfaceVariant = Theme.of(context).colorScheme.onSurfaceVariant;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 48, color: onSurfaceVariant),
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: onSurfaceVariant),
+            ),
+            if (ctaLabel != null && onCta != null) ...[
+              const SizedBox(height: AppSpacing.lg),
+              FilledButton(onPressed: onCta, child: Text(ctaLabel!)),
+            ],
+          ],
+        ),
       ),
     );
   }

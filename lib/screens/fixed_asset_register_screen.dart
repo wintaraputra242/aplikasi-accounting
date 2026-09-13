@@ -77,6 +77,7 @@ class _FixedAssetRegisterScreenState extends State<FixedAssetRegisterScreen> {
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
                   initialValue: kategori,
+                  isExpanded: true,
                   decoration:
                       const InputDecoration(labelText: 'Kategori', border: OutlineInputBorder()),
                   items:
@@ -177,14 +178,15 @@ class _FixedAssetRegisterScreenState extends State<FixedAssetRegisterScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Penyusutan berhenti dihitung mulai tanggal ini. Sesuai checklist '
                 'penutupan periode: aset rusak/dijual/hilang/tidak dipakai lagi.',
-                style: TextStyle(fontSize: 12, color: Colors.black54),
+                style: TextStyle(fontSize: 12, color: Theme.of(ctx).colorScheme.onSurfaceVariant),
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
                 initialValue: alasan,
+                isExpanded: true,
                 decoration: const InputDecoration(labelText: 'Alasan', border: OutlineInputBorder()),
                 items: kAlasanNonaktifAset
                     .map((a) => DropdownMenuItem(value: a, child: Text(a)))
@@ -299,7 +301,8 @@ class _FixedAssetRegisterScreenState extends State<FixedAssetRegisterScreen> {
                             Text(
                               '${a.kategori}${a.lokasi.isNotEmpty ? ' • ${a.lokasi}' : ''}'
                               '${a.kode.isNotEmpty ? ' • ${a.kode}' : ''}',
-                              style: const TextStyle(fontSize: 12, color: Colors.black54),
+                              style:
+                                  TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
                             ),
                             const SizedBox(height: 6),
                             Text('Tanggal Beli: ${dateFmt.format(a.tanggalBeli)}'),
@@ -316,7 +319,7 @@ class _FixedAssetRegisterScreenState extends State<FixedAssetRegisterScreen> {
                               Text(
                                 'Nonaktif: ${a.alasanNonaktif}'
                                 '${a.tanggalNonaktif != null ? ' (${dateFmt.format(a.tanggalNonaktif!)})' : ''}',
-                                style: TextStyle(fontSize: 12, color: Colors.red.shade700),
+                                style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.error),
                               ),
                             ],
                           ],

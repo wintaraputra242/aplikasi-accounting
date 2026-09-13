@@ -123,25 +123,28 @@ class _PeriodDetailScreenState extends State<PeriodDetailScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           if (editor.isSaving) ...[
-                            const SizedBox(
+                            SizedBox(
                               width: 14,
                               height: 14,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
-                                color: Colors.white70,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
                             ),
                             const SizedBox(width: 6),
-                            const Text(
+                            Text(
                               'Menyimpan...',
-                              style: TextStyle(color: Colors.white70, fontSize: 12),
+                              style: TextStyle(
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12),
                             ),
                           ] else ...[
-                            const Icon(Icons.cloud_done, color: Colors.white70, size: 16),
+                            Icon(Icons.cloud_done,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant, size: 16),
                             const SizedBox(width: 6),
-                            const Text(
+                            Text(
                               'Tersimpan',
-                              style: TextStyle(color: Colors.white70, fontSize: 12),
+                              style: TextStyle(
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12),
                             ),
                           ],
                         ],

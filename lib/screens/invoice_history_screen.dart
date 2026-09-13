@@ -160,7 +160,7 @@ class _InvoiceHistoryScreenState extends State<InvoiceHistoryScreen> {
                         ),
                         IconButton(
                           icon: const Icon(Icons.delete_outline),
-                          color: Colors.red.shade400,
+                          color: Theme.of(context).colorScheme.error,
                           tooltip: 'Hapus invoice',
                           onPressed: () => _confirmDelete(inv),
                         ),

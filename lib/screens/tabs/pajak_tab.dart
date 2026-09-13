@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../db/database_helper.dart';
 import '../../models/business_profile.dart';
 import '../../state/period_editor.dart';
+import '../../theme/app_semantic_colors.dart';
 import '../../widgets/common_widgets.dart';
 
 final _tanggalFormat = DateFormat('d MMM yyyy', 'id_ID');
@@ -77,13 +78,13 @@ class _PajakTabState extends State<PajakTab> {
           onPaidChanged: editor.setPphFinalTaxPaid,
           onFundChanged: editor.setPphFinalTaxFund,
         ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Text(
             'Tarif pajak diatur sekali di menu titik tiga > Profil Usaha. '
             'PPh 21, PPh 23, dan Pajak Badan belum direkonsiliasi otomatis '
             'di sini -- tetap diisi manual di tab Neraca.',
-            style: TextStyle(fontSize: 12, color: Colors.black54),
+            style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
         ),
       ],
@@ -117,9 +118,10 @@ class _TaxCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final outstanding = payable - paid;
-    final outstandingColor = outstanding > 0
-        ? Colors.orange.shade800
-        : (outstanding < 0 ? Colors.red : Colors.green.shade700);
+    final scheme = Theme.of(context).colorScheme;
+    final semantic = context.semanticColors;
+    final outstandingColor =
+        outstanding > 0 ? semantic.warning : (outstanding < 0 ? scheme.error : semantic.success);
 
     return SectionCard(
       title: title,
@@ -157,11 +159,11 @@ class _TaxCard extends StatelessWidget {
           const SizedBox(height: 10),
           Row(
             children: [
-              const Icon(Icons.event, size: 16, color: Colors.black54),
+              Icon(Icons.event, size: 16, color: scheme.onSurfaceVariant),
               const SizedBox(width: 6),
               Text(
                 'Jatuh tempo: ${_tanggalFormat.format(dueDate)}',
-                style: const TextStyle(fontSize: 12, color: Colors.black54),
+                style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
               ),
             ],
           ),

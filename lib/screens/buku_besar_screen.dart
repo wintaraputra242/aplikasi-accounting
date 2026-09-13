@@ -5,6 +5,7 @@ import '../models/account.dart';
 import '../models/journal.dart';
 import '../services/journal_service.dart';
 import '../utils/formatters.dart';
+import '../widgets/common_widgets.dart';
 import '../widgets/quick_nav.dart';
 
 final _dateFmt = DateFormat('d MMM yyyy', 'id_ID');
@@ -53,7 +54,7 @@ class _BukuBesarScreenState extends State<BukuBesarScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Buku Besar'),
+        title: const GlAppBarTitle('Buku Besar'),
         actions: const [QuickNavButton(current: QuickNavTarget.bukuBesar)],
       ),
       body: FutureBuilder<List<String>>(

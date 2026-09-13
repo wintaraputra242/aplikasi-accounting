@@ -5,6 +5,7 @@ import '../db/database_helper.dart';
 import '../models/account.dart';
 import '../models/bank_reconciliation.dart';
 import '../services/journal_service.dart';
+import '../theme/app_semantic_colors.dart';
 import '../utils/formatters.dart';
 import '../widgets/common_widgets.dart';
 import '../widgets/quick_nav.dart';
@@ -137,7 +138,7 @@ class _RekonsiliasiBankScreenState extends State<RekonsiliasiBankScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Rekonsiliasi Bank'),
+        title: const GlAppBarTitle('Rekonsiliasi Bank'),
         actions: const [QuickNavButton(current: QuickNavTarget.rekonsiliasiBank)],
       ),
       body: _loading
@@ -165,7 +166,7 @@ class _RekonsiliasiBankScreenState extends State<RekonsiliasiBankScreen> {
                           isThreeLine: true,
                           trailing: IconButton(
                             icon: const Icon(Icons.delete_outline, size: 20),
-                            color: Colors.red.shade400,
+                            color: Theme.of(context).colorScheme.error,
                             onPressed: () => _delete(r),
                           ),
                           onTap: () => _openExisting(r),
@@ -283,6 +284,7 @@ class _RekonsiliasiDetailScreenState extends State<_RekonsiliasiDetailScreen> {
               children: [
                 DropdownButtonFormField<String>(
                   initialValue: tipe,
+                  isExpanded: true,
                   decoration: const InputDecoration(
                     labelText: 'Jenis',
                     border: OutlineInputBorder(),
@@ -386,6 +388,8 @@ class _RekonsiliasiDetailScreenState extends State<_RekonsiliasiDetailScreen> {
       saldoRekeningKoran: _saldoRekeningKoran,
       items: _items,
     );
+    final reconBalanceColor =
+        summary.balanced ? context.semanticColors.success : Theme.of(context).colorScheme.error;
 
     return Scaffold(
       appBar: AppBar(
@@ -430,8 +434,8 @@ class _RekonsiliasiDetailScreenState extends State<_RekonsiliasiDetailScreen> {
             icon: Icons.list_alt,
             trailing: IconButton(icon: const Icon(Icons.add), onPressed: _addItem),
             child: _items.isEmpty
-                ? const Text('Belum ada item. Tekan + untuk menambah.',
-                    style: TextStyle(color: Colors.black54))
+                ? Text('Belum ada item. Tekan + untuk menambah.',
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant))
                 : Column(
                     children: [
                       for (final item in _items)
@@ -452,7 +456,7 @@ class _RekonsiliasiDetailScreenState extends State<_RekonsiliasiDetailScreen> {
                                   ),
                                   IconButton(
                                     icon: const Icon(Icons.delete_outline, size: 18),
-                                    color: Colors.red.shade400,
+                                    color: Theme.of(context).colorScheme.error,
                                     onPressed: () => _deleteItem(item),
                                   ),
                                 ],
@@ -465,10 +469,12 @@ class _RekonsiliasiDetailScreenState extends State<_RekonsiliasiDetailScreen> {
                                 if (item.posted)
                                   Row(
                                     children: [
-                                      Icon(Icons.check_circle, size: 16, color: Colors.green.shade700),
+                                      Icon(Icons.check_circle,
+                                          size: 16, color: context.semanticColors.success),
                                       const SizedBox(width: 4),
                                       Text('Sudah diposting ke jurnal',
-                                          style: TextStyle(fontSize: 12, color: Colors.green.shade700)),
+                                          style: TextStyle(
+                                              fontSize: 12, color: context.semanticColors.success)),
                                     ],
                                   )
                                 else
@@ -505,15 +511,13 @@ class _RekonsiliasiDetailScreenState extends State<_RekonsiliasiDetailScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: summary.balanced ? Colors.green.shade50 : Colors.red.shade50,
+                    color: reconBalanceColor.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     children: [
-                      Icon(
-                        summary.balanced ? Icons.check_circle : Icons.error,
-                        color: summary.balanced ? Colors.green.shade700 : Colors.red.shade700,
-                      ),
+                      Icon(summary.balanced ? Icons.check_circle : Icons.error,
+                          color: reconBalanceColor),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -521,10 +525,7 @@ class _RekonsiliasiDetailScreenState extends State<_RekonsiliasiDetailScreen> {
                               ? 'Rekonsiliasi cocok (Saldo Buku = Saldo Bank)'
                               : 'Belum cocok -- selisih ${formatRupiah(summary.selisih.abs())}. '
                                   'Cek lagi item penyesuaian atau mutasi yang belum dicatat.',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: summary.balanced ? Colors.green.shade700 : Colors.red.shade700,
-                          ),
+                          style: TextStyle(fontWeight: FontWeight.bold, color: reconBalanceColor),
                         ),
                       ),
                     ],

@@ -8,6 +8,7 @@ import '../models/business_profile.dart';
 import '../models/invoice.dart';
 import '../models/invoice_record.dart';
 import '../services/pdf_export.dart';
+import '../theme/app_semantic_colors.dart';
 import '../utils/formatters.dart';
 import '../widgets/common_widgets.dart';
 import 'business_profile_screen.dart';
@@ -262,9 +263,9 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                 if (!_profile.isComplete)
                   Card(
                     margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    color: Colors.orange.shade50,
+                    color: context.semanticColors.warning.withValues(alpha: 0.12),
                     child: ListTile(
-                      leading: Icon(Icons.warning_amber, color: Colors.orange.shade800),
+                      leading: Icon(Icons.warning_amber, color: context.semanticColors.warning),
                       title: const Text('Profil usaha belum diisi'),
                       subtitle: const Text(
                         'Isi nama usaha, rekening bank, & kontak person dulu supaya '
@@ -383,10 +384,13 @@ class _InvoiceFormScreenState extends State<InvoiceFormScreen> {
                   child: FilledButton.icon(
                     onPressed: _generating ? null : _generate,
                     icon: _generating
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 16,
                             height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Theme.of(context).colorScheme.onPrimary,
+                            ),
                           )
                         : const Icon(Icons.picture_as_pdf),
                     label: Text(_generating
@@ -434,7 +438,7 @@ class _ItemRowCard extends StatelessWidget {
               if (onRemove != null)
                 IconButton(
                   icon: const Icon(Icons.delete_outline, size: 20),
-                  color: Colors.red.shade400,
+                  color: Theme.of(context).colorScheme.error,
                   onPressed: onRemove,
                   tooltip: 'Hapus item',
                 ),

@@ -381,6 +381,7 @@ class _JurnalPenyesuaianScreenState extends State<JurnalPenyesuaianScreen> {
               children: [
                 DropdownButtonFormField<Period>(
                   initialValue: selected,
+                  isExpanded: true,
                   decoration: const InputDecoration(
                     labelText: 'Periode',
                     border: OutlineInputBorder(),
@@ -441,7 +442,7 @@ class _JurnalPenyesuaianScreenState extends State<JurnalPenyesuaianScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Jurnal Penyesuaian'),
+        title: const GlAppBarTitle('Jurnal Penyesuaian'),
         actions: const [QuickNavButton(current: QuickNavTarget.jurnalPenyesuaian)],
       ),
       body: _loading
@@ -479,7 +480,7 @@ class _JurnalPenyesuaianScreenState extends State<JurnalPenyesuaianScreen> {
                                   style: const TextStyle(fontWeight: FontWeight.bold)),
                               IconButton(
                                 icon: const Icon(Icons.delete_outline, size: 20),
-                                color: Colors.red.shade400,
+                                color: Theme.of(context).colorScheme.error,
                                 onPressed: () => _delete(item),
                               ),
                             ],

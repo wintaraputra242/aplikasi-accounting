@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../models/journal.dart';
 import '../services/journal_service.dart';
+import '../theme/app_semantic_colors.dart';
 import '../utils/formatters.dart';
+import '../widgets/common_widgets.dart';
 import '../widgets/quick_nav.dart';
 
 /// Layar Neraca Saldo (dari GL): daftar SEMUA akun dari Buku Besar dengan
@@ -30,7 +32,7 @@ class _NeracaSaldoGlScreenState extends State<NeracaSaldoGlScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Neraca Saldo (GL)'),
+        title: const GlAppBarTitle('Neraca Saldo (GL)'),
         actions: const [QuickNavButton(current: QuickNavTarget.neracaSaldoGl)],
       ),
       body: FutureBuilder<List<TrialBalanceRow>>(
@@ -48,6 +50,8 @@ class _NeracaSaldoGlScreenState extends State<NeracaSaldoGlScreen> {
           final totalDebit = rows.fold<double>(0, (s, r) => s + r.debit);
           final totalKredit = rows.fold<double>(0, (s, r) => s + r.kredit);
           final balanced = (totalDebit - totalKredit).abs() < 1;
+          final balanceColor =
+              balanced ? context.semanticColors.success : Theme.of(context).colorScheme.error;
           return Column(
             children: [
               Expanded(
@@ -80,23 +84,17 @@ class _NeracaSaldoGlScreenState extends State<NeracaSaldoGlScreen> {
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
-                color: balanced ? Colors.green.shade50 : Colors.red.shade50,
+                color: balanceColor.withValues(alpha: 0.12),
                 child: Row(
                   children: [
-                    Icon(
-                      balanced ? Icons.check_circle : Icons.error,
-                      color: balanced ? Colors.green.shade700 : Colors.red.shade700,
-                    ),
+                    Icon(balanced ? Icons.check_circle : Icons.error, color: balanceColor),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         balanced
                             ? 'Balance (Debit = Kredit)'
                             : 'TIDAK balance -- selisih ${formatRupiah((totalDebit - totalKredit).abs())}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: balanced ? Colors.green.shade700 : Colors.red.shade700,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: balanceColor),
                       ),
                     ),
                   ],

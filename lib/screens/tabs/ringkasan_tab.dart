@@ -105,10 +105,13 @@ class _RingkasanTabState extends State<RingkasanTab> {
               FilledButton.icon(
                 onPressed: _exportingPdf ? null : () => _exportPdf(p),
                 icon: _exportingPdf
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 16,
                         height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
                       )
                     : const Icon(Icons.picture_as_pdf),
                 label: Text(_exportingPdf ? 'Menyimpan...' : 'Export PDF'),

@@ -144,6 +144,7 @@ class _RingkasanTahunanScreenState extends State<RingkasanTahunanScreen> {
           icon: Icons.calendar_today,
           child: DropdownButtonFormField<int>(
             initialValue: _selectedYear,
+            isExpanded: true,
             decoration: const InputDecoration(border: OutlineInputBorder(), isDense: true),
             items: _availableYears
                 .map((y) => DropdownMenuItem(value: y, child: Text('Tahun $y')))
@@ -180,10 +181,13 @@ class _RingkasanTahunanScreenState extends State<RingkasanTahunanScreen> {
                 FilledButton.icon(
                   onPressed: _exportingPdf ? null : () => _exportPdf(agregat),
                   icon: _exportingPdf
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 16,
                           height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
                         )
                       : const Icon(Icons.picture_as_pdf),
                   label: Text(_exportingPdf ? 'Menyimpan...' : 'Export PDF'),
@@ -347,7 +351,7 @@ class _OmsetTrendChart extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           'Omset tertinggi: ${_monthAbbrev[topMonthIndex]} (${_compactRupiah(maxVal)})',
-          style: const TextStyle(fontSize: 12, color: Colors.black54),
+          style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
         ),
       ],
     );
@@ -414,13 +418,13 @@ class _AlokasiLabaCard extends StatelessWidget {
             label: 'Target Cash Reserve (${profile.cashReserveBulan}x rata-rata Beban Bulanan)',
             value: targetCashReserve,
           ),
-          const Padding(
-            padding: EdgeInsets.only(top: 4),
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
             child: Text(
               'Persentase dihitung dari Total Penjualan (Omset), bukan dari '
               'nominal Laba Bersih. Ubah persentase di menu titik tiga > '
               'Profil Usaha.',
-              style: TextStyle(fontSize: 11, color: Colors.black54),
+              style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
           ),
         ],

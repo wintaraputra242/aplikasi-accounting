@@ -50,6 +50,10 @@ dependencies:
   pdf: ^3.11.1
   # Grafik donut/pie di tab Ringkasan
   fl_chart: ^0.69.0
+  # Font Inter (design system, lihat design.md)
+  google_fonts: ^6.2.1
+  # Simpan preferensi mode tampilan (terang/gelap/ikuti sistem) di perangkat
+  shared_preferences: ^2.3.3
 
 dev_dependencies:
   flutter_test:
@@ -74,8 +78,11 @@ flutter:
   uses-material-design: true
 
   # Logo Mangana Coffee and Space, dipakai di header PDF invoice.
+  # Icon kecil Mangana, dipakai sebagai brand mark di AppBar Home (lihat
+  # design.md -- "Serius seperti software akuntansi, tapi tetap Mangana").
   assets:
     - assets/images/mangana_logo_transparent.png
+    - assets/images/mangana_icon.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

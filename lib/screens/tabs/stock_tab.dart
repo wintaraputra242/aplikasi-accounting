@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../../models/barang.dart';
 import '../../state/period_editor.dart';
 import '../../state/stock_editor.dart';
+import '../../theme/app_semantic_colors.dart';
 import '../../utils/formatters.dart';
 import '../../widgets/common_widgets.dart';
 import '../master_barang_screen.dart';
@@ -166,11 +167,11 @@ class StockTab extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
+              Text(
                 'Kalau Stock Opname periode ini sudah lengkap diisi, tekan tombol '
                 'di bawah untuk mengisi otomatis Persediaan Awal/Akhir & Total '
                 'Pembelian di tab Pembelian, dan Beban Waste di tab Beban.',
-                style: TextStyle(fontSize: 12, color: Colors.black54),
+                style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               const SizedBox(height: 10),
               FilledButton.icon(
@@ -422,6 +423,7 @@ class _WasteRowState extends State<_WasteRow> {
                 child: DropdownButtonFormField<String>(
                   initialValue:
                       kAlasanWaste.contains(widget.item.alasan) ? widget.item.alasan : kAlasanWaste.first,
+                  isExpanded: true,
                   decoration: const InputDecoration(
                     labelText: 'Alasan',
                     isDense: true,
@@ -471,8 +473,10 @@ class _OpnameRow extends StatelessWidget {
     final stokSistem = stock.stokSistem(barang.id!);
     final selisih = stock.selisih(barang.id!);
     final nilai = stock.nilaiPersediaan(barang.id!);
+    final scheme = Theme.of(context).colorScheme;
+    final semantic = context.semanticColors;
     final selisihColor =
-        selisih == 0 ? Colors.black54 : (selisih > 0 ? Colors.green.shade700 : Colors.red.shade700);
+        selisih == 0 ? scheme.onSurfaceVariant : (selisih > 0 ? semantic.success : scheme.error);
 
     return Container(
       padding: const EdgeInsets.all(10),
@@ -495,7 +499,7 @@ class _OpnameRow extends StatelessWidget {
               Flexible(
                 child: Text(
                   'Harga rata-rata: ${formatRupiah(barang.hargaRataRata)}',
-                  style: const TextStyle(fontSize: 11, color: Colors.black54),
+                  style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onSurfaceVariant),
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                   textAlign: TextAlign.right,

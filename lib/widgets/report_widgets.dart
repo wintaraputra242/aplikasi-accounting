@@ -5,6 +5,7 @@ import '../models/arus_kas.dart';
 import '../models/period.dart';
 import '../models/posisi_keuangan.dart';
 import '../services/analisa_singkat.dart';
+import '../theme/app_semantic_colors.dart';
 import '../utils/formatters.dart';
 import 'common_widgets.dart';
 
@@ -13,13 +14,11 @@ import 'common_widgets.dart';
 /// menerima [Period] biasa, jadi bisa dikasih periode asli maupun hasil
 /// [aggregateYear].
 
-// Palet kategorikal komposisi penjualan (HPP/Beban/Laba), divalidasi lewat
-// skill dataviz (jarak hue cukup untuk pembaca buta warna). Kontras oranye
-// vs latar terang agak rendah, makanya tiap slice selalu dapat label
-// persentase langsung + legenda teks -- bukan cuma mengandalkan warna.
-const _colorHpp = Color(0xFFFF7043); // deepOrange 400
-const _colorBeban = Color(0xFF5C6BC0); // indigo 400
-const _colorLaba = Color(0xFF43A047); // green 600
+/// Warna judul kontras otomatis di atas slice pie chart -- supaya tetap
+/// terbaca putih/gelap baik di light maupun dark theme walau warna slice-nya
+/// berubah kecerahan antar tema (mis. `primary` terang di dark theme).
+Color _onSliceColor(Color bg) =>
+    ThemeData.estimateBrightnessForColor(bg) == Brightness.dark ? Colors.white : Colors.black87;
 
 /// Kartu besar Laba/Rugi Bersih -- angka yang paling ingin dilihat pemilik
 /// usaha begitu buka laporan. [title] bisa diganti, mis. "Laba Bersih Tahun
@@ -33,8 +32,9 @@ class NetProfitCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final positive = period.labaBersih >= 0;
-    final color = positive ? Colors.green.shade700 : Colors.red.shade700;
-    final bg = positive ? Colors.green.shade50 : Colors.red.shade50;
+    final semantic = context.semanticColors;
+    final color = positive ? semantic.success : Theme.of(context).colorScheme.error;
+    final bg = color.withValues(alpha: 0.12);
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -107,6 +107,23 @@ class _KomposisiChart extends StatelessWidget {
 
     String pct(double value) => formatPercent(total == 0 ? 0 : value / total * 100);
 
+    // Palet dibatasi ke primary + secondary + 1 nuansa netral (bukan warna
+    // pelangi acak) supaya chart ini terasa satu sistem dengan sisa app --
+    // lihat design.md §4 "Ringkasan Tahunan". Laba Bersih (yang paling ingin
+    // dilihat pemilik usaha) dapat warna brand primary sebagai penekanan.
+    final scheme = Theme.of(context).colorScheme;
+    final colorHpp = scheme.outline;
+    final colorBeban = scheme.secondary;
+    final colorLaba = scheme.primary;
+
+    PieChartSectionData section(double value, Color color) => PieChartSectionData(
+          value: value,
+          color: color,
+          title: pct(value),
+          radius: 50,
+          titleStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: _onSliceColor(color)),
+        );
+
     return Column(
       children: [
         SizedBox(
@@ -116,39 +133,9 @@ class _KomposisiChart extends StatelessWidget {
               sectionsSpace: 2,
               centerSpaceRadius: 40,
               sections: [
-                PieChartSectionData(
-                  value: hpp,
-                  color: _colorHpp,
-                  title: pct(hpp),
-                  radius: 50,
-                  titleStyle: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                PieChartSectionData(
-                  value: beban,
-                  color: _colorBeban,
-                  title: pct(beban),
-                  radius: 50,
-                  titleStyle: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                PieChartSectionData(
-                  value: laba,
-                  color: _colorLaba,
-                  title: pct(laba),
-                  radius: 50,
-                  titleStyle: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
+                section(hpp, colorHpp),
+                section(beban, colorBeban),
+                section(laba, colorLaba),
               ],
             ),
           ),
@@ -159,16 +146,20 @@ class _KomposisiChart extends StatelessWidget {
           runSpacing: 8,
           alignment: WrapAlignment.center,
           children: [
-            legendItem(_colorHpp, 'HPP', hpp),
-            legendItem(_colorBeban, 'Beban Operasional', beban),
-            legendItem(_colorLaba, 'Laba Bersih', laba),
+            legendItem(colorHpp, 'HPP', hpp),
+            legendItem(colorBeban, 'Beban Operasional', beban),
+            legendItem(colorLaba, 'Laba Bersih', laba),
           ],
         ),
         if (period.labaBersih < 0) ...[
           const SizedBox(height: 8),
           Text(
             'Rugi Bersih: ${formatRupiah(period.labaBersih)}',
-            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.red.shade700),
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.error,
+            ),
           ),
         ],
       ],
@@ -291,7 +282,9 @@ class LabaRugiCard extends StatelessWidget {
             label: 'Laba Bersih',
             value: period.labaBersih,
             bold: true,
-            color: period.labaBersih >= 0 ? Colors.green.shade700 : Colors.red.shade700,
+            color: period.labaBersih >= 0
+                ? context.semanticColors.success
+                : Theme.of(context).colorScheme.error,
           ),
         ],
       ),
@@ -319,7 +312,8 @@ class _RasioTable extends StatelessWidget {
         ],
         rows: rasioList.map((r) {
           final ideal = r.isIdeal(r.hasil);
-          final color = ideal ? Colors.green.shade700 : Colors.orange.shade800;
+          final semantic = context.semanticColors;
+          final color = ideal ? semantic.success : semantic.warning;
           return DataRow(
             cells: [
               DataCell(Text(r.nama)),
@@ -522,8 +516,9 @@ class _SelisihBanner extends StatelessWidget {
     // Toleransi kecil untuk pembulatan (bukan bug pembulatan matematis di
     // atas Rp1) -- selisih di bawah ini dianggap "balance".
     final balanced = selisih.abs() < 1;
-    final color = balanced ? Colors.green.shade700 : Colors.orange.shade800;
-    final bg = balanced ? Colors.green.shade50 : Colors.orange.shade50;
+    final semantic = context.semanticColors;
+    final color = balanced ? semantic.success : semantic.warning;
+    final bg = color.withValues(alpha: 0.12);
     return Container(
       margin: const EdgeInsets.only(top: 8),
       padding: const EdgeInsets.all(10),
@@ -564,12 +559,14 @@ class PosisiKeuanganCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const Text('ASET', style: TextStyle(fontWeight: FontWeight.bold)),
-          const Text('Aset Lancar', style: TextStyle(fontSize: 12, color: Colors.black54)),
+          Text('Aset Lancar',
+              style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant)),
           for (final r in data.asetLancar)
             if (r.value != 0) _SubRow(label: r.label, value: r.value),
           MoneyDisplayRow(label: 'Total Aset Lancar', value: data.totalAsetLancar, bold: true),
           const SizedBox(height: 8),
-          const Text('Aset Tetap (Nilai Buku)', style: TextStyle(fontSize: 12, color: Colors.black54)),
+          Text('Aset Tetap (Nilai Buku)',
+              style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant)),
           for (final r in data.asetTetap) _SubRow(label: r.label, value: r.value),
           _SubRow(label: 'Harga Perolehan', value: data.totalHargaPerolehanAsetTetap),
           _SubRow(label: 'Akumulasi Penyusutan', value: -data.totalAkumulasiPenyusutan),

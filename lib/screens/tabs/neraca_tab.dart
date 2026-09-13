@@ -218,10 +218,10 @@ class _NeracaTabState extends State<NeracaTab> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
+              Text(
                 'Modal Awal Usaha (nilai tetap, sekali diisi, sebelum aplikasi '
                 'ini mulai dipakai) diisi lewat menu titik tiga > Profil Usaha.',
-                style: TextStyle(fontSize: 12, color: Colors.black54),
+                style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               const SizedBox(height: 10),
               MoneyField(

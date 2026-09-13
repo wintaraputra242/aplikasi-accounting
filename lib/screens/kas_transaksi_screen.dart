@@ -27,7 +27,7 @@ class KasTransaksiScreen extends StatelessWidget {
       length: 4,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Transaksi Kas'),
+          title: const GlAppBarTitle('Transaksi Kas'),
           actions: const [QuickNavButton(current: QuickNavTarget.transaksiKas)],
           bottom: const TabBar(
             isScrollable: true,
@@ -396,7 +396,7 @@ class _TransaksiTabState extends State<_TransaksiTab> {
                               Text(formatRupiah(item.jumlah), style: const TextStyle(fontWeight: FontWeight.bold)),
                               IconButton(
                                 icon: const Icon(Icons.delete_outline, size: 20),
-                                color: Colors.red.shade400,
+                                color: Theme.of(context).colorScheme.error,
                                 onPressed: () => _delete(item),
                               ),
                             ],
@@ -505,9 +505,9 @@ class _SettlementQrisTabState extends State<_SettlementQrisTab> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Pencairan saldo QRIS Clearing ke Bank, dipotong MDR.',
-                    style: TextStyle(fontSize: 12, color: Colors.black54),
+                    style: TextStyle(fontSize: 12, color: Theme.of(ctx).colorScheme.onSurfaceVariant),
                   ),
                   const SizedBox(height: 12),
                   OutlinedButton.icon(
@@ -613,7 +613,7 @@ class _SettlementQrisTabState extends State<_SettlementQrisTab> {
                               Text(formatRupiah(item.jumlahKotor), style: const TextStyle(fontWeight: FontWeight.bold)),
                               IconButton(
                                 icon: const Icon(Icons.delete_outline, size: 20),
-                                color: Colors.red.shade400,
+                                color: Theme.of(context).colorScheme.error,
                                 onPressed: () => _delete(item),
                               ),
                             ],

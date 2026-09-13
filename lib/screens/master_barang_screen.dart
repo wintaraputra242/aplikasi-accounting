@@ -79,6 +79,7 @@ class _MasterBarangScreenState extends State<MasterBarangScreen> {
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
                   initialValue: kategori,
+                  isExpanded: true,
                   decoration:
                       const InputDecoration(labelText: 'Kategori', border: OutlineInputBorder()),
                   items: kKategoriBarang

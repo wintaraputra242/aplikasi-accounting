@@ -283,10 +283,13 @@ class _BusinessProfileScreenState extends State<BusinessProfileScreen> {
                   child: FilledButton.icon(
                     onPressed: _saving ? null : _save,
                     icon: _saving
-                        ? const SizedBox(
+                        ? SizedBox(
                             width: 16,
                             height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Theme.of(context).colorScheme.onPrimary,
+                            ),
                           )
                         : const Icon(Icons.save),
                     label: Text(_saving ? 'Menyimpan...' : 'Simpan Profil'),

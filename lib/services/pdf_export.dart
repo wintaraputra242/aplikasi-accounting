@@ -11,10 +11,14 @@ import '../models/period.dart';
 import 'analisa_singkat.dart';
 import '../utils/formatters.dart';
 
-final _tealPdf = PdfColor.fromHex('#00796B');
-final _orangePdf = PdfColor.fromHex('#F4511E');
-final _purplePdf = PdfColor.fromHex('#5E35B1');
-final _greenPdf = PdfColor.fromHex('#43A047');
+// Palet PDF disamakan dengan design.md (teal lama dihapus total, brand
+// oranye jadi aksen utama) -- lihat lib/theme/app_colors.dart untuk versi
+// Flutter ColorScheme-nya. PDF selalu dicetak di atas kertas putih, jadi
+// dipakai langsung nilai "light theme"-nya tanpa varian dark.
+final _brandPrimaryPdf = PdfColor.fromHex('#C43E00'); // primary
+final _brandSecondaryPdf = PdfColor.fromHex('#44474A'); // secondary (netral gelap)
+final _neutralPdf = PdfColor.fromHex('#8C877D'); // outline (netral)
+final _successPdf = PdfColor.fromHex('#1B8A5A'); // semantik sukses
 
 /// Ukuran kertas invoice: A4 Landscape (842 x 595 pt), sesuai contoh asli
 /// (INV.MANGANA.009.pdf) yang MediaBox-nya persis A4 dibalik mendatar --
@@ -27,7 +31,7 @@ pw.Widget _sectionTitle(String text) => pw.Padding(
       padding: const pw.EdgeInsets.only(top: 12, bottom: 6),
       child: pw.Text(
         text,
-        style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold, color: _tealPdf),
+        style: pw.TextStyle(fontSize: 13, fontWeight: pw.FontWeight.bold, color: _brandPrimaryPdf),
       ),
     );
 
@@ -55,14 +59,14 @@ pw.Widget _summaryBox(String label, String value, String? sub, PdfColor color) {
 pw.Widget _summaryStrip(Period p) {
   return pw.Row(
     children: [
-      _summaryBox('Penjualan', formatRupiah(p.totalPenjualan), 'Total Pendapatan', _tealPdf),
+      _summaryBox('Penjualan', formatRupiah(p.totalPenjualan), 'Total Pendapatan', _brandPrimaryPdf),
       _summaryBox('Laba Bersih', formatRupiah(p.labaBersih), 'Net Profit',
-          p.labaBersih >= 0 ? _greenPdf : PdfColors.red700),
-      _summaryBox('Food Cost Ratio', formatPercent(p.foodCostRatio), 'Dari Total Pendapatan', _orangePdf),
+          p.labaBersih >= 0 ? _successPdf : PdfColors.red700),
+      _summaryBox('Food Cost Ratio', formatPercent(p.foodCostRatio), 'Dari Total Pendapatan', _brandSecondaryPdf),
       _summaryBox(
-          'Net Profit Margin', formatPercent(p.netProfitMargin), 'Dari Total Pendapatan', _purplePdf),
+          'Net Profit Margin', formatPercent(p.netProfitMargin), 'Dari Total Pendapatan', _neutralPdf),
       _summaryBox('Operating Expense Ratio', formatPercent(p.operatingExpenseRatio),
-          'Dari Total Pendapatan', _tealPdf),
+          'Dari Total Pendapatan', _brandPrimaryPdf),
     ],
   );
 }
@@ -73,7 +77,7 @@ pw.Widget _moneyTable(String title, List<List<String>> rows, {String? totalLabel
     children: [
       pw.Container(
         width: double.infinity,
-        color: _tealPdf,
+        color: _brandPrimaryPdf,
         padding: const pw.EdgeInsets.symmetric(vertical: 4, horizontal: 6),
         child: pw.Text(title, style: pw.TextStyle(color: PdfColors.white, fontWeight: pw.FontWeight.bold, fontSize: 10)),
       ),
@@ -125,7 +129,7 @@ pw.Widget _neracaSaldoTable(Period p) {
   final totalKredit = rows.fold<double>(0, (a, r) => a + r.kredit);
   return pw.TableHelper.fromTextArray(
     headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.white),
-    headerDecoration: pw.BoxDecoration(color: _tealPdf),
+    headerDecoration: pw.BoxDecoration(color: _brandPrimaryPdf),
     cellAlignments: {1: pw.Alignment.centerRight, 2: pw.Alignment.centerRight},
     headers: const ['Akun', 'Debit', 'Kredit'],
     data: [
@@ -142,7 +146,7 @@ pw.Widget _neracaSaldoTable(Period p) {
 pw.Widget _rasioTable(Period p) {
   return pw.TableHelper.fromTextArray(
     headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.white),
-    headerDecoration: pw.BoxDecoration(color: _tealPdf),
+    headerDecoration: pw.BoxDecoration(color: _brandPrimaryPdf),
     cellAlignments: {1: pw.Alignment.centerRight},
     headers: const ['Rasio', 'Hasil', 'Standar Ideal F&B'],
     data: buildRasioList(p).map((r) => [r.nama, formatPercent(r.hasil), r.standarIdeal]).toList(),
@@ -183,10 +187,10 @@ Future<Uint8List> buildRingkasanPdf(Period p) async {
         children: [
           pw.Text(
             'LAPORAN LABA RUGI',
-            style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: _tealPdf),
+            style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: _brandPrimaryPdf),
           ),
           pw.Text('Periode: ${p.label}', style: const pw.TextStyle(fontSize: 11)),
-          pw.Divider(color: _tealPdf),
+          pw.Divider(color: _brandPrimaryPdf),
         ],
       );
 
@@ -217,7 +221,7 @@ Future<Uint8List> buildRingkasanPdf(Period p) async {
                   pw.SizedBox(height: 10),
                   _moneyTable('HARGA POKOK PENJUALAN (HPP)', hppRows,
                       totalLabel: 'TOTAL HPP', totalValue: formatRupiah(p.hpp)),
-                  _labaBar('LABA KOTOR', p.labaKotor, _purplePdf),
+                  _labaBar('LABA KOTOR', p.labaKotor, _neutralPdf),
                 ],
               ),
             ),
@@ -228,7 +232,7 @@ Future<Uint8List> buildRingkasanPdf(Period p) async {
                 children: [
                   _moneyTable('BEBAN OPERASIONAL', bebanRows,
                       totalLabel: 'TOTAL BEBAN OPERASIONAL', totalValue: formatRupiah(p.totalBeban)),
-                  _labaBar('LABA BERSIH', p.labaBersih, p.labaBersih >= 0 ? _greenPdf : PdfColors.red700),
+                  _labaBar('LABA BERSIH', p.labaBersih, p.labaBersih >= 0 ? _successPdf : PdfColors.red700),
                 ],
               ),
             ),
@@ -269,7 +273,7 @@ pw.Widget _invoiceHeader(BusinessProfile profile, Uint8List? logoBytes) {
     children: [
       pw.Text(
         profile.namaUsaha.toUpperCase(),
-        style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold, color: _orangePdf),
+        style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold, color: _brandSecondaryPdf),
       ),
       if (profile.alamatUsaha.isNotEmpty) ...[
         pw.SizedBox(height: 2),
@@ -316,7 +320,7 @@ pw.Widget _infoCell(String text, {required bool isHeader, double height = _kInfo
     height: height,
     padding: _kBoxPad,
     decoration: pw.BoxDecoration(
-      color: isHeader ? _orangePdf : null,
+      color: isHeader ? _brandSecondaryPdf : null,
       border: pw.Border.all(color: PdfColors.grey400, width: 0.5),
     ),
     child: pw.Text(text, style: isHeader ? _kInfoLabelStyle : _kInfoValueStyle),
@@ -356,7 +360,7 @@ pw.Widget _invoiceInfoTable(InvoiceData inv) {
 pw.Widget _invoiceItemsTable(InvoiceData inv) {
   return pw.TableHelper.fromTextArray(
     headerStyle: pw.TextStyle(fontWeight: pw.FontWeight.bold, color: PdfColors.white, fontSize: 10),
-    headerDecoration: pw.BoxDecoration(color: _orangePdf),
+    headerDecoration: pw.BoxDecoration(color: _brandSecondaryPdf),
     cellStyle: const pw.TextStyle(fontSize: 10),
     cellAlignment: pw.Alignment.center,
     headerAlignment: pw.Alignment.center,
@@ -403,7 +407,7 @@ pw.Widget _kvRow(String label, String value, {double labelWidth = 90, bool value
 pw.Widget _pembayaranBox(BusinessProfile profile) {
   return pw.Container(
     padding: const pw.EdgeInsets.all(10),
-    color: _orangePdf,
+    color: _brandSecondaryPdf,
     child: pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
@@ -424,14 +428,14 @@ pw.Widget? _kontakPersonBox(BusinessProfile profile) {
   return pw.Container(
     padding: const pw.EdgeInsets.all(10),
     decoration: pw.BoxDecoration(
-      border: pw.Border.all(color: _orangePdf, width: 1),
+      border: pw.Border.all(color: _brandSecondaryPdf, width: 1),
     ),
     child: pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
         pw.Text(
           'Kontak Person',
-          style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 9, color: _orangePdf),
+          style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 9, color: _brandSecondaryPdf),
         ),
         pw.SizedBox(height: 3),
         if (profile.namaKontak.isNotEmpty) _kvRow('Nama', profile.namaKontak),

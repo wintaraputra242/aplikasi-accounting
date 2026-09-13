@@ -119,10 +119,10 @@ class _AsetTabState extends State<AsetTab> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
+              Text(
                 'Pengingat visual saja (tidak tersimpan) -- centang sambil cek '
                 'Fixed Asset Register sebelum tutup periode.',
-                style: TextStyle(fontSize: 12, color: Colors.black54),
+                style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               const SizedBox(height: 4),
               for (var i = 0; i < _checklistItems.length; i++)
@@ -182,12 +182,12 @@ class _AsetTabState extends State<AsetTab> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
+              Text(
                 'Tekan tombol ini setelah Fixed Asset Register di-update supaya '
                 'field Penyusutan Bar/Kitchen/Furniture Area/Office di tab Beban '
                 'terisi otomatis -- jadi angka penyusutan selalu bisa ditelusuri '
                 'balik ke daftar aset ini.',
-                style: TextStyle(fontSize: 12, color: Colors.black54),
+                style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
               const SizedBox(height: 10),
               FilledButton.icon(

@@ -60,12 +60,12 @@ class _ArusKasTabState extends State<ArusKasTab> {
       padding: const EdgeInsets.only(bottom: 24),
       children: [
         if (previous == null)
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Text(
               'Belum ada periode sebelumnya -- Saldo Kas Awal diasumsikan Rp0. '
               'Buat/isi periode-periode sebelumnya supaya Arus Kas akurat.',
-              style: TextStyle(fontSize: 12, color: Colors.black54),
+              style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
           ),
         ArusKasCard(data: data),
